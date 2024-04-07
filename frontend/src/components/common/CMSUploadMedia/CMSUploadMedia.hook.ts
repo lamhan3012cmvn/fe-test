@@ -39,9 +39,8 @@ const useCMSUploadMedia = (props: ICMSUploadMedia) => {
     schema: uploadMediaSchema,
     handleSubmit: (data) => {
       mutation.mutate({
-        file: data.file,
+        files: data.files,
         name: data.name,
-        alt: data.alt,
       });
     },
   });

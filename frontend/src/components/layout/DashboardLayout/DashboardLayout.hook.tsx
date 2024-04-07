@@ -1,16 +1,11 @@
 import { Link } from "react-router-dom";
 import { ROUTES } from "~/constants/routes.constant";
-import { RiDashboard2Line, RiArticleLine } from "react-icons/ri";
+import { RiArticleLine } from "react-icons/ri";
 import { CiViewList } from "react-icons/ci";
 import { BiCategoryAlt } from "react-icons/bi";
 import { RxComponent1 } from "react-icons/rx";
 
 const listMenu = [
-  {
-    label: <Link to={ROUTES.DASHBOARD}>Dashboard</Link>,
-    key: "dashboard",
-    icon: <RiDashboard2Line size={18} />,
-  },
   {
     label: "Article",
     key: "article",

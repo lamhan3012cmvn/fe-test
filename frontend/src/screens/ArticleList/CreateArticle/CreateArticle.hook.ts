@@ -15,18 +15,56 @@ const useCreateArticle = (props: ICreateArticle) => {
 
   const queryClient = useQueryClient();
 
+  const linkedInMutation = useReactMutation({
+    mutationFn: async () => {
+      const response = await axiosCore.get(ENDPOINTS.CHECK_AUTH_LINKEDIN);
+      console.log("response: ", response)
+
+      const { error, data, isAuthenticated, url } = response?.data || {}
+      if (!data || error || !isAuthenticated) {
+        message.error({
+          className: "messagePosition",
+          content: response.message || "An error occurred while checking linkedIn",
+        });
+
+        if(!isAuthenticated && url) {
+          window.open(url, '_blank');
+        }
+
+        return false;
+      }
+
+      return true;
+    },
+  })
+
   const mutation = useReactMutation({
     mutationFn: async (body: any) => {
+
+      const linkedInResponse = await linkedInMutation.mutateAsync({});
+      console.log("linkedInResponse: ", linkedInResponse)
+
+      return;
+      // if (!linkedInResponse) return false;
+
       let response = null;
       if (articleId) {
         response = await axiosCore.put(
           ENDPOINTS.ARTICLE + "/" + articleId,
-          body
+          body, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
         );
       } else {
-        response = await axiosCore.post(ENDPOINTS.ARTICLE, body);
+        response = await axiosCore.post(ENDPOINTS.ARTICLE, body, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
       }
-      if (response.error) {
+      if (!response.data || response.error) {
         message.error({
           className: "messagePosition",
           content:
@@ -51,28 +89,18 @@ const useCreateArticle = (props: ICreateArticle) => {
     },
   });
 
+
+
   const { form, onSubmit } = useFormData({
     schema: articleSchema,
     defaultValues: {
       status: ELEMENT_STATUS.ACTIVE,
     },
     handleSubmit: (data) => {
-      console.log("data: ", data);
       mutation.mutate({
         title: data.title,
-        slug: data.slug,
-        status: data.status,
         content: data.content,
-        category: data.category,
-        description: data.description,
-        thumbnail: data.thumbnail,
-        seo: {
-          title: data.SEOTitle,
-          description: data.SEODescription,
-          canonical: data.SEOCanonical,
-          keyword: data.SEOkeyword,
-          schema: data.SEOSchema,
-        },
+        files: data.files,
       });
     },
   });

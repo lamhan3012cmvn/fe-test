@@ -81,7 +81,7 @@ const Register = () => {
                 <div>
                   <FormField
                     disabled={isLoading}
-                    name="confirmPassword"
+                    name="password"
                     control={form.control}
                     render={({ field }) => (
                       <>
@@ -101,7 +101,7 @@ const Register = () => {
                 <div>
                   <FormField
                     disabled={isLoading}
-                    name="password"
+                    name="confirmPassword"
                     control={form.control}
                     render={({ field }) => (
                       <>

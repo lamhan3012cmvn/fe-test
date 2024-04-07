@@ -4,13 +4,17 @@ export const ENDPOINTS = {
   LOGIN: "/auth/login",
   REGISTER: "/auth/register",
 
-  GET_CURRENT_USER: prefix + "/get-user-current",
+  GET_CURRENT_USER: "/get-user-current",
 
-  UPLOAD_FILE: prefix + "/media/upload",
-  GET_GALLERY: prefix + "/media/get-gallery",
+  UPLOAD_FILE: "/media/upload",
+  GET_GALLERY: "/media/get-gallery",
 
-  CATEGORY: prefix + "/category",
-  CATEGORY_PARENT: prefix + "/category/parent",
+  CATEGORY: "/category",
+  CATEGORY_PARENT: "/category/parent",
 
-  ARTICLE: prefix + "/article",
+  ARTICLE: "/post/linked",
+  ARTICLE_LIST: "/post/linked/list",
+
+  // LinkedIn
+  CHECK_AUTH_LINKEDIN: "linkedIn/authenticated"
 };

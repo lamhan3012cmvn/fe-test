@@ -27,7 +27,8 @@ const useLogin = () => {
       setToLocalStorage("token", response?.data.token);
       message.success({
         className: "messagePosition",
-        content: `Welcome back, ${response?.data?.fullname} !`,
+        // content: `Welcome back, ${response?.data?.fullname} !`,
+        content: `Welcome back !`,
       });
       navigate("/");
     },
@@ -37,10 +38,12 @@ const useLogin = () => {
     schema: registerSchema,
     handleSubmit: (data) => {
       console.log("data: ", data)
-      // mutation.mutate({
-      //   username: data.username,
-      //   password: data.password,
-      // });
+      mutation.mutate({
+        email: data.email,
+        username: data.username,
+        password: data.password,
+        confirmPassword: data.confirmPassword,
+      });
     },
   });
 

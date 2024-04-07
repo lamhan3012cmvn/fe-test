@@ -38,15 +38,16 @@ export const HOCAuth = (props: IProps) => {
     dispatch(updateCurrentUser(data));
   }, [dispatch, data]);
 
-  const isNeedLogin =
-    !token ||
-    (!isFetching && !data) ||
-    (!isFetching && data && !acceptRoles.includes(data?.role));
+  // const isNeedLogin =
+  //   !token ||
+  //   (!isFetching && !data) ||
+  //   (!isFetching && data && !acceptRoles.includes(data?.role));
+  const isNeedLogin = !token
 
   if (isNeedLogin) {
     setToLocalStorage("token", "");
     return <Navigate to={ROUTES.LOGIN} />;
   }
-
+  
   return props.children;
 };

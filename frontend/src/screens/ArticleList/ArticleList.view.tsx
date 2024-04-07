@@ -26,20 +26,14 @@ const ArticleList = () => {
           <Button onClick={handleToggleCreate}>Create new</Button>
         </div>
       </PageHeader>
-      <div className="mb-5">
-        <CMSFilter />
+      <div className="w-full mt-4">
+        <div className="w-full ">
+        </div>
       </div>
-      <CMSTable
-        onEdit={handleEditRow}
-        onDelete={handleDeleteRow}
-        dataTableColumns={articleListColumns}
-        dataSource={data || []}
-      />
       <CMSDrawer
         visible={isOpenCreate}
         onClose={handleToggleCreate}
         width={800}
-        expandDefault={true}
         title="Create a new article"
       >
         <CreateArticle

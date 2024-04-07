@@ -30,12 +30,12 @@ const CMSUploadMedia = (props: ICMSUploadMedia) => {
                         accept="image"
                         onChangeFile={(file) => {
                           const fileName = (file as any).name?.split(".")[0];
-                          form.setValue("file", file);
+                          form.setValue("files", file);
                           form.setValue("name", fileName);
-                          form.clearErrors("file");
+                          form.clearErrors("files");
                         }}
                         onRemoveFile={() => {
-                          form.setValue("file", undefined);
+                          form.setValue("files", undefined);
                           form.setValue("name", "");
                         }}
                       />
@@ -56,25 +56,6 @@ const CMSUploadMedia = (props: ICMSUploadMedia) => {
                       <Input
                         type="text"
                         placeholder="Enter name image"
-                        {...field}
-                      />
-                      <FormMessage className="errorMessage" />
-                    </>
-                  )}
-                />
-              </div>
-            </div>
-            <div className="grid w-full items-center gap-1.5">
-              <Label>Alt property</Label>
-              <div className="w-full">
-                <FormField
-                  name="alt"
-                  control={form.control}
-                  render={({ field }) => (
-                    <>
-                      <Input
-                        type="text"
-                        placeholder="Enter alt property"
                         {...field}
                       />
                       <FormMessage className="errorMessage" />

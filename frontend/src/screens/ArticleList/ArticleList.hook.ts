@@ -13,7 +13,7 @@ const useArticleList = () => {
   const { isLoading, data } = useReactQuery({
     queryKey: ["get-list-article"],
     queryFn: async () => {
-      const response = await axiosCore.get(ENDPOINTS.ARTICLE);
+      const response = await axiosCore.get(ENDPOINTS.ARTICLE_LIST);
       console.log("response: ", response);
       if (response?.error) {
         message.error({

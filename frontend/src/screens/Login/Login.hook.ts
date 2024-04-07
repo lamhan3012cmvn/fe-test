@@ -27,7 +27,8 @@ const useLogin = () => {
       setToLocalStorage("token", response?.data.token);
       message.success({
         className: "messagePosition",
-        content: `Welcome back, ${response?.data?.fullname} !`,
+        // content: `Welcome back, ${response?.data?.fullname} !`,
+        content: `Welcome back !`,
       });
       navigate("/");
     },
