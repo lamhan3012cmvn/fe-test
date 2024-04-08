@@ -32,7 +32,6 @@ function App() {
                 />
               );
             })}
-            0
             {PRIVATE_ROUTES.map((routeItem) => {
               const Component = routeItem.layout ? (
                 <HOCAuth roles={routeItem.roles || []}>
