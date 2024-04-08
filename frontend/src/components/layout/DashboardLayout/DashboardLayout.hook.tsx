@@ -3,7 +3,6 @@ import { ROUTES } from "~/constants/routes.constant";
 import { RiArticleLine } from "react-icons/ri";
 import { CiViewList } from "react-icons/ci";
 import { BiCategoryAlt } from "react-icons/bi";
-import { RxComponent1 } from "react-icons/rx";
 
 const listMenu = [
   {
@@ -27,11 +26,6 @@ const listMenu = [
         icon: <BiCategoryAlt size={18} />,
       },
     ],
-  },
-  {
-    label: <Link to={ROUTES.COMPONENT_DEMO}>Component</Link>,
-    key: "Component",
-    icon: <RxComponent1 size={18} />,
   },
 ];
 const useDashboardLayout = () => {

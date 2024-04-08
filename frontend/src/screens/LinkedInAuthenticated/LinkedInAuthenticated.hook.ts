@@ -1,13 +1,10 @@
-import { useQueryClient } from '@tanstack/react-query';
 import { message } from 'antd';
 import { useSearchParams } from 'react-router-dom';
 import { ENDPOINTS } from '~/constants/endpoints.constant';
 import { axiosCore } from '~/core';
-import { useReactQuery, useRouter } from '~/hooks';
-import queryString from 'query-string';
+import { useReactQuery } from '~/hooks';
 
 const useLinkedInAuthenticated = () => {
-	const queryClient = useQueryClient();
 	const [searchParams] = useSearchParams();
 
 	const { isLoading, data } = useReactQuery({
@@ -24,6 +21,8 @@ const useLinkedInAuthenticated = () => {
 
 				return [];
 			}
+
+			window.close();
 			return response.data;
 		}
 	});

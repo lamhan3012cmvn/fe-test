@@ -6,6 +6,7 @@ import {
 import { Button } from "~/components/ui/button";
 import useArticleList from "./ArticleList.hook";
 import CreateArticle from "./CreateArticle/CreateArticle.view";
+import { HOCLinkedAuth } from "~/hocs";
 
 const ArticleList = () => {
   const {
@@ -13,15 +14,16 @@ const ArticleList = () => {
     data,
     isOpenCreate,
     handleToggleCreate,
-    handleDeleteRow,
-    handleEditRow,
   } = useArticleList();
 
   return (
     <div className="w-full">
       <PageHeader title="List article">
         <div className="w-full flex justify-end">
+          <HOCLinkedAuth>
           <Button onClick={handleToggleCreate}>Create new</Button>
+          </HOCLinkedAuth>
+          
         </div>
       </PageHeader>
       <div className="w-full mt-4">

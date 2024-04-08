@@ -14,7 +14,6 @@ const UserLogged = () => {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Avatar className="cursor-pointer">
-          {/* <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" /> */}
           <AvatarFallback>AD</AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>

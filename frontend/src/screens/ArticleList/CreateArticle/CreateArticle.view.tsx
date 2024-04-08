@@ -38,21 +38,6 @@ const CreateArticle = (props: ICreateArticle) => {
           <div className="w-full">
             <div className="grid w-full gap-1.5">
               <Label htmlFor="description">Thumbnail</Label>
-              {/* <FormField
-                name="thumbnail"
-                control={form.control}
-                render={() => (
-                  <div className="w-full">
-                    <ThumbnailArticle
-                      onChange={(imageId) => {
-                        form.setValue("thumbnail", imageId);
-                        form.clearErrors("thumbnail");
-                      }}
-                    />
-                    <FormMessage className="errorMessage" />
-                  </div>
-                )}
-              /> */}
              <div className="relative mb-[70px]">
              <UploadComponent
                 accept="image"

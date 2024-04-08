@@ -1,4 +1,3 @@
-import React from 'react'
 import useLinkedInAuthenticated from './LinkedInAuthenticated.hook'
 
 type Props = {}
