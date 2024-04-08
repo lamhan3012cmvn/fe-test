@@ -1,13 +1,11 @@
 import {
   CMSDrawer,
-  CMSFilter,
   CMSTable,
-  PageHeader,
+  PageHeader
 } from "~/components/common";
-import { articleListColumns } from "./ArticleList.config";
+import { Button } from "~/components/ui/button";
 import useArticleList from "./ArticleList.hook";
 import CreateArticle from "./CreateArticle/CreateArticle.view";
-import { Button } from "~/components/ui/button";
 
 const ArticleList = () => {
   const {
@@ -28,6 +26,28 @@ const ArticleList = () => {
       </PageHeader>
       <div className="w-full mt-4">
         <div className="w-full ">
+          <CMSTable dataTableColumns={[
+            {
+              title: "No",
+              dataIndex: "index",
+              render: (_: number, __: number, index: number) => index + 1,
+            },
+            {
+              title: "Title",
+              dataIndex: "title",
+            }
+            ,
+            {
+              title: "Like count",
+              dataIndex: "likeCount",
+            }
+            ,
+            {
+              title: "Comments count",
+              dataIndex: "commentsCount",
+            }
+
+          ]} dataSource={data?.list ?? []} />
         </div>
       </div>
       <CMSDrawer

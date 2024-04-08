@@ -1,164 +1,160 @@
-import { useQueryClient } from "@tanstack/react-query";
-import { message } from "antd";
-import { useEffect } from "react";
-import { ELEMENT_STATUS } from "~/constants/common.constant";
-import { ENDPOINTS } from "~/constants/endpoints.constant";
-import { axiosCore } from "~/core";
-import { generateSlugByText } from "~/helpers/common.helper";
-import { articleSchema } from "~/helpers/schemaValidation.helper";
-import { useFormData, useReactMutation, useReactQuery } from "~/hooks";
-import { ICreateArticle } from "./CreateArticle.props";
-import { CategoryModel } from "~/models";
+import { useQueryClient } from '@tanstack/react-query';
+import { message } from 'antd';
+import { useEffect } from 'react';
+import { ELEMENT_STATUS } from '~/constants/common.constant';
+import { ENDPOINTS } from '~/constants/endpoints.constant';
+import { axiosCore } from '~/core';
+import { generateSlugByText } from '~/helpers/common.helper';
+import { articleSchema } from '~/helpers/schemaValidation.helper';
+import { useFormData, useReactMutation, useReactQuery } from '~/hooks';
+import { ICreateArticle } from './CreateArticle.props';
+import { CategoryModel } from '~/models';
 
 const useCreateArticle = (props: ICreateArticle) => {
-  const articleId = props.IdRowTarget || "";
+	const articleId = props.IdRowTarget || '';
 
-  const queryClient = useQueryClient();
+	const queryClient = useQueryClient();
 
-  const linkedInMutation = useReactMutation({
-    mutationFn: async () => {
-      const response = await axiosCore.get(ENDPOINTS.CHECK_AUTH_LINKEDIN);
-      console.log("response: ", response)
+	const linkedInMutation = useReactMutation({
+		mutationFn: async () => {
+			const response = await axiosCore.get(ENDPOINTS.CHECK_AUTH_LINKEDIN);
+			console.log('response: ', response);
 
-      const { error, data, isAuthenticated, url } = response?.data || {}
-      if (!data || error || !isAuthenticated) {
-        message.error({
-          className: "messagePosition",
-          content: response.message || "An error occurred while checking linkedIn",
-        });
+			const { error, data, isAuthenticated, url } = response?.data || {};
+			if (!data || error || !isAuthenticated) {
+				message.error({
+					className: 'messagePosition',
+					content:
+						response.message || 'An error occurred while checking linkedIn'
+				});
 
-        if(!isAuthenticated && url) {
-          window.open(url, '_blank');
-        }
+				if (!isAuthenticated && url) {
+					window.open(url, '_blank');
+				}
 
-        return false;
-      }
+				return true;
+			}
 
-      return true;
-    },
-  })
+			return true;
+		}
+	});
 
-  const mutation = useReactMutation({
-    mutationFn: async (body: any) => {
+	const mutation = useReactMutation({
+		mutationFn: async (body: any) => {
+			const linkedInResponse = await linkedInMutation.mutateAsync({});
+			if (!linkedInResponse) return false;
 
-      const linkedInResponse = await linkedInMutation.mutateAsync({});
-      console.log("linkedInResponse: ", linkedInResponse)
+			let response = null;
+			if (articleId) {
+				response = await axiosCore.put(
+					ENDPOINTS.ARTICLE + '/' + articleId,
+					body,
+					{
+						headers: {
+							'Content-Type': 'multipart/form-data'
+						}
+					}
+				);
+			} else {
+				response = await axiosCore.post(ENDPOINTS.ARTICLE, body, {
+					headers: {
+						'Content-Type': 'multipart/form-data'
+					}
+				});
+			}
+			if (!response.data || response.error) {
+				message.error({
+					className: 'messagePosition',
+					content:
+						response.message ||
+						`Can not ${articleId ? 'update' : 'create'} the category`
+				});
 
-      return;
-      // if (!linkedInResponse) return false;
+				return false;
+			}
 
-      let response = null;
-      if (articleId) {
-        response = await axiosCore.put(
-          ENDPOINTS.ARTICLE + "/" + articleId,
-          body, {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          }
-        );
-      } else {
-        response = await axiosCore.post(ENDPOINTS.ARTICLE, body, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        });
-      }
-      if (!response.data || response.error) {
-        message.error({
-          className: "messagePosition",
-          content:
-            response.message ||
-            `Can not ${articleId ? "update" : "create"} the category`,
-        });
+			message.success({
+				className: 'messagePosition',
+				content: `${articleId ? 'Update' : 'Create'} category success`
+			});
 
-        return false;
-      }
+			queryClient.invalidateQueries({
+				queryKey: ['get-list-category']
+			});
 
-      message.success({
-        className: "messagePosition",
-        content: `${articleId ? "Update" : "Create"} category success`,
-      });
+			if (props.onCloseModal) props.onCloseModal();
+			return true;
+		}
+	});
 
-      queryClient.invalidateQueries({
-        queryKey: ["get-list-category"],
-      });
+	const { form, onSubmit } = useFormData({
+		schema: articleSchema,
+		defaultValues: {
+			status: ELEMENT_STATUS.ACTIVE
+		},
+		handleSubmit: data => {
+			mutation.mutate({
+				title: data.title,
+				content: data.content,
+				files: data.files
+			});
+		}
+	});
 
-      if (props.onCloseModal) props.onCloseModal();
-      return true;
-    },
-  });
+	const { data: categories = [] } = useReactQuery({
+		queryKey: ['get-parent-category'],
+		queryFn: async () => {
+			const response = await axiosCore.get(ENDPOINTS.CATEGORY);
 
+			if (!response?.error) {
+				return response?.data || [];
+			}
 
+			return [];
+		}
+	});
 
-  const { form, onSubmit } = useFormData({
-    schema: articleSchema,
-    defaultValues: {
-      status: ELEMENT_STATUS.ACTIVE,
-    },
-    handleSubmit: (data) => {
-      mutation.mutate({
-        title: data.title,
-        content: data.content,
-        files: data.files,
-      });
-    },
-  });
+	const { isLoading, data: articleDetails } = useReactQuery<CategoryModel>({
+		queryKey: ['get-category', articleId],
+		queryFn: async () => {
+			if (!articleId) return null;
+			const response = await axiosCore.get(
+				ENDPOINTS.CATEGORY + '/' + articleId
+			);
+			console.log('response: ', response);
 
-  const { data: categories = [] } = useReactQuery({
-    queryKey: ["get-parent-category"],
-    queryFn: async () => {
-      const response = await axiosCore.get(ENDPOINTS.CATEGORY);
+			if (response?.error) return null;
 
-      if (!response?.error) {
-        return response?.data || [];
-      }
+			return response?.data;
+		}
+	});
 
-      return [];
-    },
-  });
+	const titleWatch = form.watch('title');
 
-  const { isLoading, data: articleDetails } = useReactQuery<CategoryModel>({
-    queryKey: ["get-category", articleId],
-    queryFn: async () => {
-      if (!articleId) return null;
-      const response = await axiosCore.get(
-        ENDPOINTS.CATEGORY + "/" + articleId
-      );
-      console.log("response: ", response);
+	useEffect(() => {
+		const slugGenerate = generateSlugByText(titleWatch);
+		form.setValue('slug', slugGenerate);
+		form.clearErrors('slug');
+	}, [form, titleWatch]);
 
-      if (response?.error) return null;
+	useEffect(() => {
+		// form.setValue("title", articleDetails?.title ?? "");
+		// form.setValue("slug", articleDetails?.slug ?? "");
+		// form.setValue("description", articleDetails?.description ?? "");
+		// form.setValue("parentCategory", articleDetails?.parentCategory ?? null);
+		// form.setValue("status", articleDetails?.status ?? ELEMENT_STATUS.ACTIVE);
+		// form.setValue("SEOTitle", articleDetails?.seo?.title ?? "");
+		// form.setValue("SEODescription", articleDetails?.seo?.description ?? "");
+		// form.setValue("SEOCanonical", articleDetails?.seo?.canonical ?? "");
+		// form.setValue("SEOkeyword", articleDetails?.seo?.keyword ?? "");
+		// form.setValue("SEOSchema", articleDetails?.seo?.schema ?? "");
+	}, [articleDetails, form]);
 
-      return response?.data;
-    },
-  });
-
-  const titleWatch = form.watch("title");
-
-  useEffect(() => {
-    const slugGenerate = generateSlugByText(titleWatch);
-    form.setValue("slug", slugGenerate);
-    form.clearErrors("slug");
-  }, [form, titleWatch]);
-
-  useEffect(() => {
-    // form.setValue("title", articleDetails?.title ?? "");
-    // form.setValue("slug", articleDetails?.slug ?? "");
-    // form.setValue("description", articleDetails?.description ?? "");
-    // form.setValue("parentCategory", articleDetails?.parentCategory ?? null);
-    // form.setValue("status", articleDetails?.status ?? ELEMENT_STATUS.ACTIVE);
-    // form.setValue("SEOTitle", articleDetails?.seo?.title ?? "");
-    // form.setValue("SEODescription", articleDetails?.seo?.description ?? "");
-    // form.setValue("SEOCanonical", articleDetails?.seo?.canonical ?? "");
-    // form.setValue("SEOkeyword", articleDetails?.seo?.keyword ?? "");
-    // form.setValue("SEOSchema", articleDetails?.seo?.schema ?? "");
-  }, [articleDetails, form]);
-
-  return {
-    form,
-    onSubmit,
-    categories,
-  };
+	return {
+		form,
+		onSubmit,
+		categories
+	};
 };
 
 export default useCreateArticle;
